@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { clearCache, getCacheStats, getNumbers } from './api.js'
+import { clearCache, getCacheStats, getNumberById, getNumbers } from './api.js'
 import AddNumberForm from './components/AddNumberForm.jsx'
 import CacheStatsPanel from './components/CacheStatsPanel.jsx'
 import NumbersTable from './components/NumbersTable.jsx'
@@ -13,8 +13,9 @@ const styles = {
 
 export default function App() {
 	const [numbers, setNumbers] = useState([])
-	const [cacheStatus, setCacheStatus] = useState(null)
-	const [stats, setStats] = useState({ hits: 0, misses: 0, hitRate: 0 })
+	// per-row cache status: { [id]: 'HIT'|'MISS' }
+	const [rowStatuses, setRowStatuses] = useState({})
+	const [stats, setStats] = useState({ hits: 0, misses: 0, evictions: 0, hitRate: 0 })
 	const [error, setError] = useState(null)
 
 	const fetchStats = useCallback(async () => {
@@ -28,19 +29,29 @@ export default function App() {
 	const fetchNumbers = useCallback(async () => {
 		try {
 			setError(null)
-			const { data, cacheStatus: cs } = await getNumbers()
+			const { data } = await getNumbers()
 			setNumbers(data)
-			setCacheStatus(cs)
+			setRowStatuses({}) // reset per-row badges when list refreshes
 			await fetchStats()
 		} catch (e) {
 			setError(e.message)
 		}
 	}, [fetchStats])
 
+	const handleLookup = async (id) => {
+		try {
+			const { cacheStatus } = await getNumberById(id)
+			setRowStatuses(prev => ({ ...prev, [id]: cacheStatus }))
+			await fetchStats()
+		} catch (e) {
+			setError(e.message)
+		}
+	}
+
 	const handleClear = async () => {
 		try {
 			await clearCache()
-			setCacheStatus(null)
+			setRowStatuses({})
 			await fetchStats()
 		} catch (e) {
 			setError(e.message)
@@ -60,7 +71,7 @@ export default function App() {
 			{error && <p style={{ color: '#c0392b', marginBottom: 16 }}>{error}</p>}
 			<div style={styles.row}>
 				<AddNumberForm onAdd={fetchNumbers} style={styles.card} />
-				<NumbersTable numbers={numbers} cacheStatus={cacheStatus} onFetch={fetchNumbers} style={styles.card} />
+				<NumbersTable numbers={numbers} rowStatuses={rowStatuses} onFetch={fetchNumbers} onLookup={handleLookup} style={styles.card} />
 				<CacheStatsPanel stats={stats} onClear={handleClear} style={styles.card} />
 			</div>
 		</div>

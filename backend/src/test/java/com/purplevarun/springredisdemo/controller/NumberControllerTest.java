@@ -59,7 +59,6 @@ class NumberControllerTest {
     void get_returnsAllNumbers_200() throws Exception {
         NumberEntry entry = new NumberEntry(UUID.randomUUID(), 42, Instant.now());
         when(numberService.getAllNumbers()).thenReturn(List.of(entry));
-        when(cacheStatsService.getLastCacheStatus()).thenReturn("MISS");
 
         mockMvc.perform(get("/api/numbers"))
                 .andExpect(status().isOk())
@@ -67,11 +66,23 @@ class NumberControllerTest {
     }
 
     @Test
-    void get_setsCacheStatusHeader() throws Exception {
-        when(numberService.getAllNumbers()).thenReturn(List.of());
-        when(cacheStatsService.getLastCacheStatus()).thenReturn("HIT");
+    void getById_returns200WithCacheStatusHeader() throws Exception {
+        NumberEntry entry = new NumberEntry(UUID.randomUUID(), 7, Instant.now());
+        when(numberService.getNumberById(entry.getId())).thenReturn(entry);
+        when(cacheStatsService.getLastCacheStatus()).thenReturn("MISS");
 
-        mockMvc.perform(get("/api/numbers"))
-                .andExpect(header().string("X-Cache-Status", "HIT"));
+        mockMvc.perform(get("/api/numbers/" + entry.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.value").value(7))
+                .andExpect(header().string("X-Cache-Status", "MISS"));
+    }
+
+    @Test
+    void getById_returns404_whenNotFound() throws Exception {
+        UUID id = UUID.randomUUID();
+        when(numberService.getNumberById(id)).thenThrow(new java.util.NoSuchElementException());
+
+        mockMvc.perform(get("/api/numbers/" + id))
+                .andExpect(status().isNotFound());
     }
 }

@@ -18,6 +18,14 @@ export async function getNumbers() {
 	return { data, cacheStatus }
 }
 
+export async function getNumberById(id) {
+	const res = await fetch(`${BASE}/numbers/${id}`)
+	if (!res.ok) throw new Error(`Failed to fetch number ${id}`)
+	const data = await res.json()
+	const cacheStatus = res.headers.get('X-Cache-Status')
+	return { data, cacheStatus }
+}
+
 export async function getCacheStats() {
 	const res = await fetch(`${BASE}/cache/stats`)
 	if (!res.ok) throw new Error('Failed to fetch cache stats')

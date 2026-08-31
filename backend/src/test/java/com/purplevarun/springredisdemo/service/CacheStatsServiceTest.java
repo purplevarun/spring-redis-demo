@@ -72,14 +72,22 @@ class CacheStatsServiceTest {
     }
 
     @Test
+    void recordEviction_incrementsEvictionCount() {
+        service.recordEviction();
+        assertThat(service.toResponse().getEvictions()).isEqualTo(1L);
+    }
+
+    @Test
     void reset_clearsCountersAndThreadLocal() {
         service.recordHit();
         service.recordMiss();
+        service.recordEviction();
         service.reset();
 
         CacheStatsResponse response = service.toResponse();
         assertThat(response.getHits()).isZero();
         assertThat(response.getMisses()).isZero();
+        assertThat(response.getEvictions()).isZero();
         assertThat(service.getLastCacheStatus()).isEqualTo("UNKNOWN");
     }
 }

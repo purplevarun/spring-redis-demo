@@ -1,6 +1,7 @@
 package com.purplevarun.springredisdemo.config;
 
 import com.purplevarun.springredisdemo.service.CacheStatsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -18,6 +19,9 @@ import java.util.Collection;
 @EnableCaching
 public class CacheConfig {
 
+    @Value("${app.cache.max-size:3}")
+    private int maxSize;
+
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory,
                                      CacheStatsService statsService) {
@@ -32,12 +36,12 @@ public class CacheConfig {
                 .cacheDefaults(config)
                 .build();
 
-        // wrap every cache instance so all get() calls are logged and counted
+        // wrap every cache instance so all get() calls are logged, counted and size-limited
         return new CacheManager() {
             @Override
             public Cache getCache(String name) {
                 Cache cache = delegate.getCache(name);
-                return cache == null ? null : new LoggingCache(cache, statsService);
+                return cache == null ? null : new LoggingCache(cache, statsService, maxSize);
             }
 
             @Override

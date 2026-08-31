@@ -9,6 +9,7 @@ public class CacheStatsService {
 
     private final AtomicLong hits = new AtomicLong(0);
     private final AtomicLong misses = new AtomicLong(0);
+    private final AtomicLong evictions = new AtomicLong(0);
     // thread-local so the controller can read HIT/MISS status for the current request
     private final ThreadLocal<Boolean> lastRequestHit = new ThreadLocal<>();
 
@@ -20,6 +21,10 @@ public class CacheStatsService {
     public void recordMiss() {
         misses.incrementAndGet();
         lastRequestHit.set(false);
+    }
+
+    public void recordEviction() {
+        evictions.incrementAndGet();
     }
 
     public String getLastCacheStatus() {
@@ -34,12 +39,13 @@ public class CacheStatsService {
         long m = misses.get();
         long total = h + m;
         double hitRate = total == 0 ? 0.0 : (double) h / total;
-        return new CacheStatsResponse(h, m, hitRate);
+        return new CacheStatsResponse(h, m, evictions.get(), hitRate);
     }
 
     public void reset() {
         hits.set(0);
         misses.set(0);
+        evictions.set(0);
         lastRequestHit.remove();
     }
 }

@@ -27,7 +27,7 @@ class LoggingCacheTest {
 
     @BeforeEach
     void setUp() {
-        loggingCache = new LoggingCache(delegate, statsService);
+        loggingCache = new LoggingCache(delegate, statsService, 10);
     }
 
     @Test
@@ -116,9 +116,48 @@ class LoggingCacheTest {
     }
 
     @Test
-    void evict_delegatesToDelegate() {
-        loggingCache.evict("all");
-        verify(delegate).evict("all");
+    void put_evictsLruEntry_whenMaxSizeExceeded() {
+        LoggingCache bounded = new LoggingCache(delegate, statsService, 2);
+
+        bounded.put("key1", "v1");
+        bounded.put("key2", "v2");
+        bounded.put("key3", "v3"); // should evict key1 (LRU)
+
+        verify(delegate).evict("key1");
+        verify(statsService).recordEviction();
+    }
+
+    @Test
+    void put_doesNotEvict_whenUnderMaxSize() {
+        LoggingCache bounded = new LoggingCache(delegate, statsService, 5);
+        bounded.put("key1", "v1");
+        bounded.put("key2", "v2");
+
+        verify(delegate, never()).evict(any());
+        verify(statsService, never()).recordEviction();
+    }
+
+    @Test
+    void evict_removesKeyFromLruTracker() {
+        LoggingCache bounded = new LoggingCache(delegate, statsService, 2);
+        bounded.put("key1", "v1");
+        bounded.put("key2", "v2");
+        bounded.evict("key1");
+        bounded.put("key3", "v3"); // key1 was removed from tracker, so no LRU-triggered eviction
+
+        // direct evict was called for key1; no LRU eviction should have fired
+        verify(statsService, never()).recordEviction();
+    }
+
+    @Test
+    void clear_resetsLruTracker() {
+        LoggingCache bounded = new LoggingCache(delegate, statsService, 2);
+        bounded.put("key1", "v1");
+        bounded.put("key2", "v2");
+        bounded.clear();
+        bounded.put("key3", "v3"); // after clear the tracker is empty, no eviction
+
+        verify(statsService, never()).recordEviction();
     }
 
     @Test

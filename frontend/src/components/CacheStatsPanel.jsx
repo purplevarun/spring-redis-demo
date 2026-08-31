@@ -12,6 +12,7 @@ export default function CacheStatsPanel({ stats, onClear, style }) {
 			<div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
 				<Stat label="Hits" value={stats.hits} color="#16a34a" />
 				<Stat label="Misses" value={stats.misses} color="#dc2626" />
+				<Stat label="Evictions" value={stats.evictions ?? 0} color="#d97706" />
 				<Stat label="Hit rate" value={`${pct}%`} color={barColor} />
 			</div>
 

@@ -27,3 +27,8 @@ server:
 logging:
   level:
     com.purplevarun.springredisdemo: INFO
+
+app:
+  cache:
+    # max number of individual entries kept in the 'numbers' cache; LRU evicts on overflow
+    max-size: 3

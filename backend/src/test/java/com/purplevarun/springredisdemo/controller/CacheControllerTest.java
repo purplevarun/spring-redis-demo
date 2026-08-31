@@ -27,7 +27,7 @@ class CacheControllerTest {
 
     @Test
     void getStats_returnsStatsFromService() throws Exception {
-        when(statsService.toResponse()).thenReturn(new CacheStatsResponse(5, 3, 0.625));
+        when(statsService.toResponse()).thenReturn(new CacheStatsResponse(5, 3, 1, 0.625));
 
         mockMvc.perform(get("/api/cache/stats"))
                 .andExpect(status().isOk())

@@ -1,7 +1,13 @@
-export default function NumbersTable({ numbers, cacheStatus, onFetch, style }) {
-	const badgeColor =
-		cacheStatus === 'HIT' ? '#16a34a' :
-			cacheStatus === 'MISS' ? '#dc2626' : '#64748b'
+export default function NumbersTable({ numbers, rowStatuses, onFetch, onLookup, style }) {
+	const badge = (status) => {
+		if (!status) return null
+		const bg = status === 'HIT' ? '#16a34a' : '#dc2626'
+		return (
+			<span style={{ background: bg, color: '#fff', fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4, marginLeft: 6 }}>
+				{status}
+			</span>
+		)
+	}
 
 	return (
 		<div style={style}>
@@ -9,28 +15,21 @@ export default function NumbersTable({ numbers, cacheStatus, onFetch, style }) {
 				<h2 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>
 					Numbers ({numbers.length})
 				</h2>
-				<div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-					{cacheStatus && (
-						<span style={{ background: badgeColor, color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 4 }}>
-							{cacheStatus}
-						</span>
-					)}
-					<button
-						onClick={onFetch}
-						style={{ padding: '5px 12px', border: '1px solid #cbd5e1', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}
-					>
-						Fetch
-					</button>
-				</div>
+				<button
+					onClick={onFetch}
+					style={{ padding: '5px 12px', border: '1px solid #cbd5e1', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}
+				>
+					Fetch all
+				</button>
 			</div>
 
 			{numbers.length === 0
-				? <p style={{ color: '#94a3b8', fontSize: 13 }}>No numbers yet. Post one above.</p>
+				? <p style={{ color: '#94a3b8', fontSize: 13 }}>No numbers yet — post one or click Fetch all.</p>
 				: (
 					<table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
 						<thead>
 							<tr style={{ background: '#f8fafc' }}>
-								{['Value', 'Created at', 'ID'].map(h => (
+								{['Value', 'Created at', 'ID', ''].map(h => (
 									<th key={h} style={{ textAlign: 'left', padding: '6px 8px', fontWeight: 600, borderBottom: '1px solid #e2e8f0' }}>
 										{h}
 									</th>
@@ -46,6 +45,15 @@ export default function NumbersTable({ numbers, cacheStatus, onFetch, style }) {
 									</td>
 									<td style={{ padding: '6px 8px', color: '#94a3b8', fontSize: 11 }}>
 										{n.id.slice(0, 8)}…
+									</td>
+									<td style={{ padding: '6px 8px' }}>
+										<button
+											onClick={() => onLookup(n.id)}
+											style={{ padding: '3px 10px', border: '1px solid #cbd5e1', borderRadius: 5, cursor: 'pointer', fontSize: 12 }}
+										>
+											Lookup
+										</button>
+										{badge(rowStatuses[n.id])}
 									</td>
 								</tr>
 							))}
