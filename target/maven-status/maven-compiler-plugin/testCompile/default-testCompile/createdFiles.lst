@@ -1,6 +1,0 @@
-com/purplevarun/springredisdemo/controller/NumberControllerTest.class
-com/purplevarun/springredisdemo/service/NumberServiceTest.class
-com/purplevarun/springredisdemo/service/LoggingCacheTest.class
-com/purplevarun/springredisdemo/integration/NumberCacheIntegrationTest.class
-com/purplevarun/springredisdemo/service/CacheStatsServiceTest.class
-com/purplevarun/springredisdemo/controller/CacheControllerTest.class
