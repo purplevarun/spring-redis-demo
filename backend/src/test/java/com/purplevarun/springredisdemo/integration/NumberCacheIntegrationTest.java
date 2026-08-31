@@ -32,7 +32,8 @@ class NumberCacheIntegrationTest {
 
     @Container
     @SuppressWarnings("resource")
-    static GenericContainer<?> redis = new GenericContainer<>("redis:8-alpine")
+    // redis:7-alpine used here because redis:8-alpine has a startup issue inside the Testcontainers Docker-in-Docker setup
+    static GenericContainer<?> redis = new GenericContainer<>("redis:7-alpine")
             .withExposedPorts(6379);
 
     @DynamicPropertySource

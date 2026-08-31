@@ -4,6 +4,8 @@ docker run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$PWD/backend":/workspace \
   -v "$HOME/.m2":/root/.m2 \
+  -e TESTCONTAINERS_RYUK_DISABLED=true \
+  -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal \
   -w /workspace \
   maven:3.9-eclipse-temurin-25 \
   mvn test
