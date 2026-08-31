@@ -48,10 +48,11 @@ export default function App() {
 	}
 
 	useEffect(() => {
-		fetchNumbers()
+		// only poll stats on mount; numbers are fetched on explicit button click
+		fetchStats()
 		const interval = setInterval(fetchStats, 3000)
 		return () => clearInterval(interval)
-	}, [fetchNumbers, fetchStats])
+	}, [fetchStats])
 
 	return (
 		<div style={styles.app}>
