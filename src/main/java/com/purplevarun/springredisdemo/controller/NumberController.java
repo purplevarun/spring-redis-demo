@@ -6,6 +6,7 @@ import com.purplevarun.springredisdemo.service.NumberService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/numbers")
@@ -21,5 +22,10 @@ public class NumberController {
     @ResponseStatus(HttpStatus.CREATED)
     public NumberEntry create(@Valid @RequestBody NumberRequest request) {
         return numberService.createNumber(request);
+    }
+
+    @GetMapping
+    public List<NumberEntry> getAll() {
+        return numberService.getAllNumbers();
     }
 }
