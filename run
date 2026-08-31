@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# tear down any lingering containers from a previous run to free bound ports
+docker compose down 2>/dev/null
+
 # run compose in background so we can poll and then wait for it
 docker compose up --build &
 COMPOSE_PID=$!
