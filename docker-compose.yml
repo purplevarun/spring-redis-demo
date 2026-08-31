@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15
+    image: postgres:17
     environment:
       POSTGRES_DB: spring_redis_demo
       POSTGRES_USER: postgres
@@ -14,7 +14,7 @@ services:
       retries: 10
 
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     # allkeys-lru evicts least-recently-used entries when maxmemory is reached
     command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
     ports:
