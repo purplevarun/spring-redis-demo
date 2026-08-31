@@ -1,0 +1,9 @@
+#!/bin/bash
+# runs the full test suite inside a Maven container — no local Java required
+docker run --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "$PWD/backend":/workspace \
+  -v "$HOME/.m2":/root/.m2 \
+  -w /workspace \
+  maven:3.9-eclipse-temurin-23 \
+  mvn test
