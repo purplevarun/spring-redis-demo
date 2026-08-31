@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NumberEntry.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">spring-redis-demo</a> &gt; <a href="index.source.html" class="el_package">com.purplevarun.springredisdemo.model</a> &gt; <span class="el_source">NumberEntry.java</span></div><h1>NumberEntry.java</h1><pre class="source lang-java linenums">package com.purplevarun.springredisdemo.model;
+
+import jakarta.persistence.*;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
+
+@Entity
+@Table(name = &quot;numbers&quot;)
+public class NumberEntry implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(nullable = false)
+    private int value;
+
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
+<span class="fc" id="L22">    public NumberEntry() {}</span>
+
+<span class="fc" id="L24">    public NumberEntry(UUID id, int value, Instant createdAt) {</span>
+<span class="fc" id="L25">        this.id = id;</span>
+<span class="fc" id="L26">        this.value = value;</span>
+<span class="fc" id="L27">        this.createdAt = createdAt;</span>
+<span class="fc" id="L28">    }</span>
+
+    @PrePersist
+    private void prePersist() {
+<span class="nc" id="L32">        this.createdAt = Instant.now();</span>
+<span class="nc" id="L33">    }</span>
+
+<span class="fc" id="L35">    public UUID getId() { return id; }</span>
+<span class="nc" id="L36">    public void setId(UUID id) { this.id = id; }</span>
+
+<span class="fc" id="L38">    public int getValue() { return value; }</span>
+<span class="fc" id="L39">    public void setValue(int value) { this.value = value; }</span>
+
+<span class="fc" id="L41">    public Instant getCreatedAt() { return createdAt; }</span>
+<span class="nc" id="L42">    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
