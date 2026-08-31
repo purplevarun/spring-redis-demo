@@ -1,2 +1,17 @@
 #!/bin/bash
-docker compose up --build
+
+# run compose in background so we can poll and then wait for it
+docker compose up --build &
+COMPOSE_PID=$!
+
+# clean shutdown on Ctrl+C
+trap 'kill $COMPOSE_PID 2>/dev/null; docker compose down' INT TERM
+
+echo "Waiting for UI at http://localhost:3000..."
+until curl -sf http://localhost:3000 > /dev/null 2>&1; do
+  sleep 2
+done
+echo "UI is ready — opening http://localhost:3000"
+open http://localhost:3000
+
+wait $COMPOSE_PID
