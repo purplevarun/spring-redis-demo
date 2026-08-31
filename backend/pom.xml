@@ -18,7 +18,7 @@
     <description>Spring Boot caching demo with Redis LRU eviction and PostgreSQL</description>
 
     <properties>
-        <java.version>23</java.version>
+        <java.version>25</java.version>
         <testcontainers.version>1.20.1</testcontainers.version>
     </properties>
 
